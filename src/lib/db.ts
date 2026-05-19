@@ -1,15 +1,23 @@
 // src/lib/db.ts
 // Database connection and schema setup for Neon PostgreSQL
 
-import { neon } from "@neondatabase/serverless";
+import { neon, neonConfig } from "@neondatabase/serverless";
+
+// ─── Configure for better local dev performance ───────────────────────────────
+// fetchConnectionCache reduces cold start latency
+neonConfig.fetchConnectionCache = true;
 
 // ─── Connection ───────────────────────────────────────────────────────────────
 const sql = neon(process.env.DATABASE_URL!);
 
 export default sql;
 
-// ─── Initialize all tables ────────────────────────────────────────────────────
+// ─── Initialization guard — only runs once per server instance ────────────────
+let initialized = false;
+
 export async function initializeDatabase() {
+  if (initialized) return;
+
   try {
     // ── Users table ──
     await sql`
@@ -28,7 +36,6 @@ export async function initializeDatabase() {
     `;
 
     // ── Parent class assignments ──
-    // Allows one parent to be linked to multiple classes
     await sql`
       CREATE TABLE IF NOT EXISTS parent_classes (
         parent_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -62,12 +69,11 @@ export async function initializeDatabase() {
       )
     `;
 
-    // ── Seed default admin if no users exist ──
+    // ── Seed default admin if not exists ──
     const existing = await sql`SELECT id FROM users WHERE username = 'admin'`;
 
     if (existing.length === 0) {
-      // Import bcrypt here to hash the default password
-      const bcrypt = await import("bcryptjs");
+      const bcrypt      = await import("bcryptjs");
       const hashedPassword = await bcrypt.hash("TBA@Admin2025", 10);
 
       await sql`
@@ -85,10 +91,12 @@ export async function initializeDatabase() {
       console.log("✅ Default admin account created");
     }
 
+    initialized = true;
     console.log("✅ Database initialized successfully");
   } catch (error) {
     console.error("❌ Database initialization error:", error);
-    throw error;
+    // Don't throw — let API handle gracefully
+    // initialized stays false so it retries next request
   }
 }
 
@@ -100,9 +108,9 @@ export function generateId(prefix: string = "id"): string {
 // ─── Helper — get file type from filename ────────────────────────────────────
 export function getFileType(filename: string): string {
   const ext = filename.split(".").pop()?.toLowerCase() || "";
-  if (ext === "pdf") return "pdf";
-  if (["doc", "docx"].includes(ext)) return "docx";
-  if (["ppt", "pptx"].includes(ext)) return "pptx";
+  if (ext === "pdf")                                       return "pdf";
+  if (["doc", "docx"].includes(ext))                      return "docx";
+  if (["ppt", "pptx"].includes(ext))                      return "pptx";
   if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) return "image";
   return "other";
 }

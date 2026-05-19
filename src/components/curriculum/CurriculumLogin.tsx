@@ -11,6 +11,7 @@ export type AuthUser = {
   name: string;
   username: string;
   token: string;
+  classes?: string[]; // for parents — assigned classes
 };
 
 type Props = {
@@ -66,13 +67,15 @@ export default function CurriculumLogin({ onLogin }: Props) {
     setLoading(true);
 
     try {
-      // ── Parent — access code login ──
+      // ── Parent login — access code is stored as username in DB ──
       if (selectedRole === "parent") {
-        const res  = await fetch(`/api/users?action=parentLogin&code=${encodeURIComponent(accessCode)}`);
+        const res  = await fetch(
+          `/api/users?action=parentLogin&code=${encodeURIComponent(accessCode)}`
+        );
         const data = await res.json();
 
         if (!data.success) {
-          setError(data.error || "Invalid access code.");
+          setError(data.error || "Invalid access code. Please try again.");
           setLoading(false);
           return;
         }
@@ -83,6 +86,7 @@ export default function CurriculumLogin({ onLogin }: Props) {
           name:     name || data.user.name,
           username: data.user.username,
           token:    data.token,
+          classes:  data.user.classes || [],
         });
         return;
       }
@@ -101,7 +105,9 @@ export default function CurriculumLogin({ onLogin }: Props) {
 
       // Confirm role matches selection
       if (data.user.role !== selectedRole) {
-        setError(`This account is not registered as a ${selectedRole}. Please select the correct role.`);
+        setError(
+          `This account is not registered as a ${selectedRole}. Please select the correct role.`
+        );
         setLoading(false);
         return;
       }
@@ -112,6 +118,7 @@ export default function CurriculumLogin({ onLogin }: Props) {
         name:     data.user.name,
         username: data.user.username,
         token:    data.token,
+        classes:  data.user.classes || [],
       });
 
     } catch {
@@ -125,18 +132,33 @@ export default function CurriculumLogin({ onLogin }: Props) {
       <div className="w-full max-w-lg">
 
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} className="text-center mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-8"
+        >
           <div className="w-16 h-16 bg-forest rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
             <BookOpen className="w-8 h-8 text-white" />
           </div>
-          <h1 className="font-nunito font-extrabold text-3xl text-forest mb-2">Curriculum Hub</h1>
-          <p className="font-poppins text-charcoal/60 text-sm">Thinkers Base Academy — Learning Resources Portal</p>
+          <h1 className="font-nunito font-extrabold text-3xl text-forest mb-2">
+            Curriculum Hub
+          </h1>
+          <p className="font-poppins text-charcoal/60 text-sm">
+            Thinkers Base Academy — Learning Resources Portal
+          </p>
         </motion.div>
 
         {/* Step 1 — Role selection */}
         {!selectedRole ? (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1, duration: 0.5 }}>
-            <p className="font-nunito font-bold text-forest text-center text-base mb-5">Who are you logging in as?</p>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+          >
+            <p className="font-nunito font-bold text-forest text-center text-base mb-5">
+              Who are you logging in as?
+            </p>
             <div className="space-y-3">
               {roles.map((r, i) => (
                 <motion.button
@@ -161,30 +183,45 @@ export default function CurriculumLogin({ onLogin }: Props) {
 
         ) : (
           // Step 2 — Login form
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.3 }}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             <div className="bg-white rounded-card p-8 shadow-card">
 
               {/* Back */}
-              <button onClick={reset} className="flex items-center gap-1.5 font-poppins text-xs text-charcoal/50 hover:text-forest transition-colors mb-6">
+              <button
+                onClick={reset}
+                className="flex items-center gap-1.5 font-poppins text-xs text-charcoal/50 hover:text-forest transition-colors mb-6"
+              >
                 ← Back to role selection
               </button>
 
               {/* Role badge */}
               <div className="flex items-center gap-3 mb-6 pb-5 border-b border-gray-100">
-                <span className="text-2xl">{roles.find((r) => r.role === selectedRole)?.emoji}</span>
+                <span className="text-2xl">
+                  {roles.find((r) => r.role === selectedRole)?.emoji}
+                </span>
                 <div>
-                  <p className="font-nunito font-bold text-forest text-base">{roles.find((r) => r.role === selectedRole)?.label}</p>
-                  <p className="font-poppins text-charcoal/50 text-xs">Enter your details below</p>
+                  <p className="font-nunito font-bold text-forest text-base">
+                    {roles.find((r) => r.role === selectedRole)?.label}
+                  </p>
+                  <p className="font-poppins text-charcoal/50 text-xs">
+                    Enter your details below
+                  </p>
                 </div>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-4">
 
-                {/* Admin / Teacher */}
+                {/* Admin / Teacher fields */}
                 {selectedRole !== "parent" && (
                   <>
                     <div>
-                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Username *</label>
+                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
+                        Username *
+                      </label>
                       <input
                         required
                         value={username}
@@ -193,8 +230,11 @@ export default function CurriculumLogin({ onLogin }: Props) {
                         className="w-full font-poppins text-sm px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-gray-50/50"
                       />
                     </div>
+
                     <div>
-                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Password *</label>
+                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
+                        Password *
+                      </label>
                       <div className="relative">
                         <input
                           required
@@ -204,20 +244,28 @@ export default function CurriculumLogin({ onLogin }: Props) {
                           placeholder="Enter your password"
                           className="w-full font-poppins text-sm px-4 py-3 pr-11 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-gray-50/50"
                         />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-forest transition-colors">
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-forest transition-colors"
+                        >
+                          {showPassword
+                            ? <EyeOff className="w-4 h-4" />
+                            : <Eye    className="w-4 h-4" />
+                          }
                         </button>
                       </div>
                     </div>
                   </>
                 )}
 
-                {/* Parent */}
+                {/* Parent fields — access code only */}
                 {selectedRole === "parent" && (
                   <>
                     <div>
                       <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                        Your Name <span className="text-charcoal/40">(optional)</span>
+                        Your Name{" "}
+                        <span className="text-charcoal/40">(optional)</span>
                       </label>
                       <input
                         value={name}
@@ -226,8 +274,11 @@ export default function CurriculumLogin({ onLogin }: Props) {
                         className="w-full font-poppins text-sm px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-gray-50/50"
                       />
                     </div>
+
                     <div>
-                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Access Code *</label>
+                      <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
+                        Access Code *
+                      </label>
                       <div className="relative">
                         <input
                           required
@@ -237,14 +288,23 @@ export default function CurriculumLogin({ onLogin }: Props) {
                           placeholder="Enter your access code"
                           className="w-full font-poppins text-sm px-4 py-3 pr-11 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-gray-50/50"
                         />
-                        <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-forest transition-colors">
-                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal/40 hover:text-forest transition-colors"
+                        >
+                          {showPassword
+                            ? <EyeOff className="w-4 h-4" />
+                            : <Eye    className="w-4 h-4" />
+                          }
                         </button>
                       </div>
                     </div>
+
                     <div className="bg-leaf/10 border border-leaf/20 rounded-xl p-4">
                       <p className="font-poppins text-forest text-xs leading-relaxed">
-                        <span className="font-nunito font-bold">Access code</span> is provided by the school. Contact the admin if you don&apos;t have one.
+                        <span className="font-nunito font-bold">Access code</span> is
+                        provided by the school. Contact the admin if you don&apos;t have one.
                       </p>
                     </div>
                   </>
@@ -252,7 +312,11 @@ export default function CurriculumLogin({ onLogin }: Props) {
 
                 {/* Error */}
                 {error && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2">
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-center gap-2"
+                  >
                     <Lock className="w-4 h-4 text-red-400 flex-shrink-0" />
                     <p className="font-poppins text-red-600 text-xs">{error}</p>
                   </motion.div>
