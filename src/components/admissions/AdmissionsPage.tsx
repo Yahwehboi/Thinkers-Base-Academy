@@ -48,7 +48,7 @@ function AdmissionsHero() {
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }} className="font-poppins text-white/80 text-lg leading-relaxed mb-8 max-w-lg">
-              We welcome applications for all stages — Creche, Pre School and Grade School. The process is simple, personal and designed with your family in mind.
+              We welcome applications for all stages — Playgroup, Pre School and Grade School. The process is simple, personal and designed with your family in mind.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-wrap gap-3">
@@ -64,7 +64,7 @@ function AdmissionsHero() {
           {/* Stats */}
           <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="hidden lg:grid grid-cols-2 gap-4">
             {[
-              { emoji: "🌱", value: "Creche", label: "Ages 1 – 4 • Playgroup to Reception" },
+              { emoji: "🌱", value: "Foundation Stage", label: "Ages 1 – 4 • Playgroup to Reception" },
               { emoji: "🎒", value: "Key Stage 1", label: "Ages 4 – 6 • Grade 1 – 2" },
               { emoji: "📚", value: "Key Stage 2", label: "Ages 6 – 12 • Grade 3 – 5/6" },
               { emoji: "📅", value: "Sept", label: "New term begins every September" },
@@ -93,9 +93,9 @@ function AdmissionsHero() {
 // ─────────────────────────────────────────────────────────────────────────────
 const stageInfo = [
   {
-    id: "creche",
+    id: "Foundation Stage",
     emoji: "🌱",
-    label: "Creche",
+    label: "Foundation",
     color: "#F4D03F",
     bg: "#FEF9E7",
     ageRange: "Ages 1 – 4",
@@ -110,25 +110,7 @@ const stageInfo = [
     ],
     approach: "Play-based, EYFS-inspired learning with a strong focus on language, motor skills and emotional development.",
   },
-  {
-    id: "preschool",
-    emoji: "🎒",
-    label: "Pre School",
-    color: "#5BA4CF",
-    bg: "#EBF5FB",
-    ageRange: "Ages 4 – 6",
-    classes: ["Grade 1", "Grade 2"],
-    description: "Key Stage 1 builds confident readers, writers and problem-solvers. Your child develops strong academic habits while creativity and curiosity remain at the core.",
-    requirements: [
-      "Birth certificate or age declaration",
-      "Previous school report (if applicable)",
-      "Passport photograph (2 copies)",
-      "Parent/guardian valid ID",
-      "Completed admission form",
-      "Brief assessment (literacy & numeracy)",
-    ],
-    approach: "Structured learning blended with creative projects. Strong emphasis on reading, writing, numeracy and social skills.",
-  },
+
   {
     id: "gradeschool",
     emoji: "📚",
@@ -136,8 +118,8 @@ const stageInfo = [
     color: "#E8845C",
     bg: "#FDF2E9",
     ageRange: "Ages 6 – 12",
-    classes: ["Grade 3", "Grade 4", "Grade 5", "Grade 5/6"],
-    description: "Key Stage 2 pupils are ambitious, supported learners who grow as critical thinkers and are comprehensively prepared for secondary school and beyond.",
+    classes: ["Grade 1", "Grade 2","Grade 3", "Grade 4", "Grade 5", "Grade 5/6"],
+    description: "Grade school pupils are ambitious, supported learners who grow as critical thinkers and are comprehensively prepared for secondary school and beyond.",
     requirements: [
       "Birth certificate or age declaration",
       "Last two terms' school reports",
@@ -154,7 +136,7 @@ const stageInfo = [
 function StageSelector() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [selected, setSelected] = useState("creche");
+  const [selected, setSelected] = useState("Foundation Stage");
   const stage = stageInfo.find((s) => s.id === selected)!;
 
   return (
@@ -235,7 +217,7 @@ function StageSelector() {
               ))}
             </ul>
             <a
-              href="https://wa.me/2348037134462"
+              href="https://wa.me/2348088292398"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 w-full justify-center font-nunito font-extrabold text-sm px-6 py-3.5 rounded-button bg-forest text-white hover:bg-forest/90 hover:-translate-y-0.5 transition-all shadow-md"
@@ -350,14 +332,14 @@ function KeyDates() {
 // FAQ
 // ─────────────────────────────────────────────────────────────────────────────
 const faqs = [
-  { q: "What age can my child start at Thinkers Base Academy?", a: "We accept children from as young as 1 year old into our Play Group programme. Our Creche runs from ages 1–4, Pre School from 4–6, and Grade School from 6–12." },
+  { q: "What age can my child start at Thinkers Base Academy?", a: "We accept children from as young as 1 year old into our Play Group programme. Our Foundation stage runs from ages 1–4, Pre School from 4–6, and Grade School from 6–12." },
   { q: "Do you accept mid-term transfers from other schools?", a: "Yes, we do accept transfers mid-term subject to space availability. Please contact us directly and bring your child's most recent school report and transfer certificate." },
   { q: "Is there a waiting list if spaces are full?", a: "Yes. If a class is full we will place your child on our waiting list and contact you as soon as a space becomes available. We recommend applying early." },
   { q: "Do you offer school bus / transportation?", a: "Yes. We have an air-conditioned school bus for safe and comfortable pickup and drop-off. Please enquire about routes and fees when you contact us." },
   { q: "What curriculum do you follow?", a: "We follow a rich blend of the Nigerian curriculum and British EYFS/primary frameworks, enriched with extracurricular activities, digital literacy, and our CLASSY character programme." },
   { q: "Are there extra-curricular activities?", a: "Yes — 8 clubs and activities including Music & Dance, Culinary, Science, Bible Explorers, Public Speaking, Farmers Club, Art & Craft, and Swimming." },
   { q: "What are the school fees?", a: "School fees vary by stage and term. Please contact us directly via WhatsApp or phone for the current fee schedule — we are happy to discuss all options with you." },
-  { q: "How do I arrange a school visit?", a: "Simply call or WhatsApp us on +234 803 713 4462 and we will schedule a convenient time for you to tour the school with your child." },
+  { q: "How do I arrange a school visit?", a: "Simply call or WhatsApp us on +2348088292398 and we will schedule a convenient time for you to tour the school with your child." },
 ];
 
 function FAQ() {
@@ -424,9 +406,9 @@ function ContactStrip() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               {[
-                { icon: Phone, label: "Call / WhatsApp", value: "+234 803 713 4462", href: "https://wa.me/2348037134462" },
+                { icon: Phone, label: "Call / WhatsApp", value: "+2348088292398", href: "https://wa.me/2348088292398" },
                 { icon: Mail, label: "Email Us", value: "thinkersbaseacademy@gmail.com", href: "mailto:thinkersbaseacademy@gmail.com" },
-                { icon: Calendar, label: "School Hours", value: "Mon–Wed: 8am–2pm\nThu–Fri: 8am–3pm", href: null },
+                { icon: Calendar, label: "School Hours", value: "Mon–Wed: 8am–3pm\nThu–Fri: 8am–2pm", href: null },
               ].map((item) => (
                 <div key={item.label} className="bg-white/10 border border-white/15 rounded-xl p-4 text-center">
                   <item.icon className="w-6 h-6 text-nursery mx-auto mb-2" />
