@@ -123,7 +123,7 @@ curriculum_materials
 
 ## 📸 Screenshots
 
->![Thinkrs-Base](screenshots/ThinkersBase-Website.png)
+>![Thinkrs-Base-Academy](screenshots/ThinkersBase-Website.png)
 ---
 
 ## 🚀 How to Run Locally
