@@ -16,8 +16,25 @@ const poppins = Poppins({
 });
 
 export const metadata = {
-  title: "Thinkersbase Academy",
-  description: "Growing Minds, Blooming Futures",
+  title: "Thinkers Base Academy — Every Child Belongs Here",
+  description:
+    "Thinkers Base Academy is a nurturing nursery and primary school in Enugu, Nigeria. We offer world-class education from Playgroup through Grade School — building confident, curious and compassionate young leaders.",
+  keywords: [
+    "Thinkers Base Academy",
+    "primary school Enugu",
+    "nursery school Enugu",
+    "best school Enugu",
+    "Trans-Ekulu school",
+    "New GRA school Enugu",
+  ],
+  openGraph: {
+    title: "Thinkers Base Academy — Every Child Belongs Here",
+    description:
+      "A nurturing school community in Enugu where every child grows into a confident, curious and compassionate leader.",
+    siteName: "Thinkers Base Academy",
+    locale: "en_NG",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

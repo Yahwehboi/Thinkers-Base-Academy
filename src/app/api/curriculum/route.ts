@@ -40,30 +40,44 @@ function getTokenData(req: NextRequest) {
   return verifyToken(auth.slice(7));
 }
 
-function isAdmin(req: NextRequest): boolean {
-  const data = getTokenData(req);
-  return data?.role === "admin";
-}
-
 // ─── Upload file to Cloudinary ────────────────────────────────────────────────
 async function uploadToCloudinary(
   file: File,
   folder: string = "tba-curriculum"
-): Promise<{ url: string; publicId: string; size: number }> {
-  const buffer = Buffer.from(await file.arrayBuffer());
-  const base64 = buffer.toString("base64");
-  const dataUri = `data:${file.type};base64,${base64}`;
+): Promise<{ url: string; publicId: string; size: number; resourceType: string }> {
+  const buffer  = Buffer.from(await file.arrayBuffer());
+  const base64  = buffer.toString("base64");
+
+  // Determine the correct resource_type BEFORE uploading
+  // Images: use "image". Everything else (PDF, docx, pptx, etc.): use "raw"
+  // This prevents Cloudinary from misclassifying PDFs and blocking delivery
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+  const imageExts = ["jpg", "jpeg", "png", "gif", "webp", "svg"];
+  const isImage = imageExts.includes(ext);
+  const resourceType = isImage ? "image" : "raw";
+
+  // Use the correct MIME type for the data URI
+  const mimeType = file.type || "application/octet-stream";
+  const dataUri  = `data:${mimeType};base64,${base64}`;
+
+  // Strip extension from public_id — Cloudinary appends it automatically for raw files
+  // Without this, you get double extensions like "file.pdf.pdf"
+  const baseName = file.name
+    .replace(/\.[^/.]+$/, "")           // remove extension
+    .replace(/[^a-zA-Z0-9._-]/g, "_");  // sanitise
 
   const result = await cloudinary.uploader.upload(dataUri, {
     folder,
-    resource_type: "auto",
-    public_id: `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`,
+    resource_type: resourceType,
+    public_id: `${Date.now()}-${baseName}`,
+    // No transformation — deliver raw bytes as-is
   });
 
   return {
-    url:      result.secure_url,
-    publicId: result.public_id,
-    size:     result.bytes,
+    url:          result.secure_url,
+    publicId:     result.public_id,
+    size:         result.bytes,
+    resourceType, // save so we know how to delete/sign later
   };
 }
 
@@ -81,10 +95,8 @@ export async function GET(req: NextRequest) {
     const search        = searchParams.get("search");
     const approvedOnly  = searchParams.get("approvedOnly") !== "false";
 
-    // Build dynamic query conditions
     let resources: Resource[];
 
-    // Parent — only sees approved resources for their assigned classes
     if (tokenData?.role === "parent") {
       const classRows = await sql`
         SELECT class_name FROM parent_classes WHERE parent_id = ${tokenData.id}
@@ -101,32 +113,22 @@ export async function GET(req: NextRequest) {
         AND class_name = ANY(${parentClasses})
         ORDER BY uploaded_at DESC
       ` as Resource[];
-    }
-
-    // Teacher — sees their own uploads + all approved resources
-    else if (tokenData?.role === "teacher") {
+    } else if (tokenData?.role === "teacher") {
       resources = await sql`
         SELECT * FROM resources
         WHERE (approved = TRUE OR uploaded_by_id = ${tokenData.id})
         ORDER BY uploaded_at DESC
       ` as Resource[];
-    }
-
-    // Admin — sees everything
-    else if (tokenData?.role === "admin") {
+    } else if (tokenData?.role === "admin") {
       if (approvedOnly) {
         resources = await sql`SELECT * FROM resources WHERE approved = TRUE ORDER BY uploaded_at DESC` as Resource[];
       } else {
         resources = await sql`SELECT * FROM resources ORDER BY uploaded_at DESC` as Resource[];
       }
-    }
-
-    // No token — public view, approved only
-    else {
+    } else {
       resources = await sql`SELECT * FROM resources WHERE approved = TRUE ORDER BY uploaded_at DESC` as Resource[];
     }
 
-    // Apply filters in JS (simpler than dynamic SQL)
     if (classFilter)   resources = resources.filter((r) => r.class_name === classFilter);
     if (subjectFilter) resources = resources.filter((r) => r.subject === subjectFilter);
     if (termFilter)    resources = resources.filter((r) => r.term === termFilter);
@@ -142,7 +144,6 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Map to camelCase for frontend compatibility
     const mapped = resources.map((r) => ({
       id:             r.id,
       title:          r.title,
@@ -202,7 +203,6 @@ export async function POST(req: NextRequest) {
     let fileSize     = 0;
     let fileType     = "other";
 
-    // Upload file to Cloudinary if provided
     if (file && file.size > 0) {
       const uploaded = await uploadToCloudinary(file);
       fileUrl      = uploaded.url;
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
     }
 
     const id       = generateId("res");
-    const approved = tokenData.role === "admin"; // auto-approve admin uploads
+    const approved = tokenData.role === "admin";
 
     await sql`
       INSERT INTO resources (
@@ -230,7 +230,6 @@ export async function POST(req: NextRequest) {
     `;
 
     const newResource = await sql`SELECT * FROM resources WHERE id = ${id}`;
-
     return NextResponse.json({ success: true, resource: newResource[0] });
   } catch (err) {
     console.error("POST /api/curriculum:", err);
@@ -262,7 +261,7 @@ export async function PUT(req: NextRequest) {
 
     if (action === "approve") {
       if (tokenData.role !== "admin") {
-        return NextResponse.json({ success: false, error: "Only admins can approve resources" }, { status: 403 });
+        return NextResponse.json({ success: false, error: "Only admins can approve" }, { status: 403 });
       }
       await sql`
         UPDATE resources
@@ -275,7 +274,6 @@ export async function PUT(req: NextRequest) {
       }
       await sql`UPDATE resources SET approved = FALSE WHERE id = ${id}`;
     } else {
-      // General edit — only admin or uploader
       const resource = rows[0] as Resource;
       if (tokenData.role !== "admin" && resource.uploaded_by_id !== tokenData.id) {
         return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
@@ -314,23 +312,23 @@ export async function DELETE(req: NextRequest) {
 
     const resource = rows[0] as Resource;
 
-    // Only admin or uploader can delete
     if (tokenData.role !== "admin" && resource.uploaded_by_id !== tokenData.id) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 403 });
     }
 
-    // Delete file from Cloudinary
     if (resource.file_public_id) {
+      // Determine resource_type from file_type — images use "image", everything else "raw"
+      const isImage = resource.file_type === "image";
       try {
-        await cloudinary.uploader.destroy(resource.file_public_id, { resource_type: "raw" });
+        await cloudinary.uploader.destroy(resource.file_public_id, {
+          resource_type: isImage ? "image" : "raw",
+        });
       } catch {
-        // File may not exist on Cloudinary, continue anyway
         console.warn("Cloudinary delete failed for:", resource.file_public_id);
       }
     }
 
     await sql`DELETE FROM resources WHERE id = ${id}`;
-
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("DELETE /api/curriculum:", err);
