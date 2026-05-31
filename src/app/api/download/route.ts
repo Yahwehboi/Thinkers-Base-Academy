@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 import sql, { initializeDatabase } from "@/lib/db";
-import { verifyToken } from "@/app/api/users/route";
+import { verifyToken } from "@/lib/auth";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,

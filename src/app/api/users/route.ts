@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import sql, { initializeDatabase, generateId } from "@/lib/db";
+import { signToken, verifyToken } from "@/lib/auth";
 
-const JWT_SECRET      = process.env.JWT_SECRET!;
-const JWT_EXPIRES     = "8h";
 const SALT_ROUNDS     = 10;
 const MAX_ATTEMPTS    = 5;
 const LOCKOUT_MINUTES = 15;
@@ -36,19 +34,7 @@ function isLocked(user: User): boolean {
 }
 
 function generateToken(user: User): string {
-  return jwt.sign(
-    { id: user.id, role: user.role, name: user.name },
-    JWT_SECRET,
-    { expiresIn: JWT_EXPIRES }
-  );
-}
-
-export function verifyToken(token: string): { id: string; role: string; name: string } | null {
-  try {
-    return jwt.verify(token, JWT_SECRET) as { id: string; role: string; name: string };
-  } catch {
-    return null;
-  }
+  return signToken({ id: user.id, role: user.role, name: user.name });
 }
 
 function verifyAdminRequest(req: NextRequest): boolean {

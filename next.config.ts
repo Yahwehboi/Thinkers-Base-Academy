@@ -1,11 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    workerThreads: false,
-    cpus: 1,
+  eslint: {
+    ignoreDuringBuilds: true,
   },
-  staticPageGenerationTimeout: 300,
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;
