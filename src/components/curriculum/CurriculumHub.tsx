@@ -266,11 +266,11 @@ export default function CurriculumHub() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
 
         {/* ── Tabs — admin only ── */}
         {user.role === "admin" && (
-          <div className="flex gap-2 mb-8">
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
             {([
               { key: "resources", label: "📚 Resources" },
               { key: "users",     label: "👥 User Management" },
@@ -278,7 +278,7 @@ export default function CurriculumHub() {
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`font-nunito font-bold text-sm px-5 py-2.5 rounded-button transition-all ${
+                className={`font-nunito font-bold text-sm px-4 sm:px-5 py-2.5 rounded-button transition-all whitespace-nowrap ${
                   tab === t.key
                     ? "bg-forest text-white shadow-md"
                     : "bg-white text-charcoal/60 border border-gray-200 hover:border-forest/40"
@@ -318,9 +318,9 @@ export default function CurriculumHub() {
 
             {/* Search + filter bar */}
             <div className="bg-white rounded-card shadow-card p-4 mb-6">
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-2 sm:gap-3 flex-wrap items-center">
                 {/* Search */}
-                <div className="flex-1 min-w-[200px] relative">
+                <div className="flex-1 min-w-0 w-full sm:w-auto relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/40" />
                   <input
                     value={search}
@@ -340,7 +340,7 @@ export default function CurriculumHub() {
                   }`}
                 >
                   <Filter className="w-4 h-4" />
-                  Filter
+                  <span className="hidden sm:inline">Filter</span>
                   {hasActiveFilters && (
                     <span className="w-5 h-5 bg-leaf text-white rounded-full flex items-center justify-center text-[10px] font-extrabold">
                       {[filterClass, filterSubject, filterTerm, filterSession, showPending]
@@ -367,7 +367,8 @@ export default function CurriculumHub() {
                     onClick={() => setShowUpload(true)}
                     className="inline-flex items-center gap-2 bg-forest text-white font-nunito font-bold text-sm px-4 py-2.5 rounded-button hover:bg-forest/90 transition-all shadow-sm"
                   >
-                    <Upload className="w-4 h-4" /> Upload
+                    <Upload className="w-4 h-4" />
+                    <span className="hidden sm:inline">Upload</span>
                   </button>
                 )}
 
@@ -385,25 +386,21 @@ export default function CurriculumHub() {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
-                  className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-3"
+                  className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3"
                 >
                   {/* Class */}
                   <select
                     value={filterClass}
                     onChange={(e) => setFilterClass(e.target.value)}
-                    className="font-poppins text-xs px-3 py-2.5 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white col-span-2 sm:col-span-1"
+                    className="font-poppins text-xs px-3 py-2.5 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">All Classes</option>
                     {user.role === "parent"
                       ? availableClasses.map((c) => (
                           <option key={c} value={c}>{c}</option>
                         ))
-                      : STAGE_GROUPS.map((g) => (
-                          <optgroup key={g.label} label={g.label}>
-                            {g.classes.map((c) => (
-                              <option key={c} value={c}>{c}</option>
-                            ))}
-                          </optgroup>
+                      : (dynClasses.length > 0 ? dynClasses : STAGE_GROUPS.flatMap(g => g.classes)).map((c) => (
+                          <option key={c} value={c}>{c}</option>
                         ))
                     }
                   </select>
