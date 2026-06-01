@@ -69,6 +69,72 @@ export async function initializeDatabase() {
       )
     `;
 
+    // ── Curriculum settings table ──
+    await sql`
+      CREATE TABLE IF NOT EXISTS curriculum_settings (
+        id TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        value TEXT NOT NULL,
+        sort_order INTEGER DEFAULT 0,
+        created_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `;
+
+    // ── Seed default settings if empty ──
+    const settingsCount = await sql`SELECT COUNT(*) as count FROM curriculum_settings`;
+    if (Number((settingsCount[0] as { count: string }).count) === 0) {
+      const defaults = [
+        // Classes
+        { category: "class", value: "Play Group" },
+        { category: "class", value: "Preschool 1" },
+        { category: "class", value: "Preschool 2" },
+        { category: "class", value: "Reception" },
+        { category: "class", value: "Grade 1" },
+        { category: "class", value: "Grade 2" },
+        { category: "class", value: "Grade 3" },
+        { category: "class", value: "Grade 4" },
+        { category: "class", value: "Grade 5" },
+        { category: "class", value: "Grade 5/6" },
+        // Subjects
+        { category: "subject", value: "English Language" },
+        { category: "subject", value: "Mathematics" },
+        { category: "subject", value: "Basic Science & Technology" },
+        { category: "subject", value: "Social Studies" },
+        { category: "subject", value: "History" },
+        { category: "subject", value: "Igbo Language" },
+        { category: "subject", value: "Computer Studies" },
+        { category: "subject", value: "Creative Arts" },
+        { category: "subject", value: "Music" },
+        { category: "subject", value: "Public Speaking" },
+        { category: "subject", value: "Religious & Moral Education" },
+        { category: "subject", value: "Literature & Reading" },
+        { category: "subject", value: "Language & Literacy" },
+        { category: "subject", value: "Expressive Arts" },
+        { category: "subject", value: "Personal & Social Development" },
+        { category: "subject", value: "Understanding the World" },
+        { category: "subject", value: "Physical Development" },
+        { category: "subject", value: "General" },
+        // Terms
+        { category: "term", value: "First Term" },
+        { category: "term", value: "Second Term" },
+        { category: "term", value: "Third Term" },
+        // Sessions
+        { category: "session", value: "2024/2025" },
+        { category: "session", value: "2025/2026" },
+        { category: "session", value: "2026/2027" },
+      ];
+
+      for (let i = 0; i < defaults.length; i++) {
+        const { category, value } = defaults[i];
+        const id = `set_${Date.now()}_${i}`;
+        await sql`
+          INSERT INTO curriculum_settings (id, category, value, sort_order)
+          VALUES (${id}, ${category}, ${value}, ${i})
+        `;
+      }
+      console.log("✅ Default curriculum settings seeded");
+    }
+
     // ── Seed default admin if not exists ──
     const existing = await sql`SELECT id FROM users WHERE username = 'admin'`;
 

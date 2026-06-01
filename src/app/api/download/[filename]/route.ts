@@ -52,10 +52,18 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No file attached" }, { status: 404 });
     }
 
-    // Determine Cloudinary resource_type
-    // Images use "image", everything else (docx, pptx, pdf etc.) uses "raw"
-    const isImage = resource.file_type === "image";
-    const resourceType = isImage ? "image" : "raw";
+    // Detect actual resource_type from the stored Cloudinary URL
+    // Some older uploads were mis-stored as "image" even for PDFs
+    // Reading from the URL is the most reliable approach
+    let resourceType = "raw";
+    if (resource.file_url) {
+      if (resource.file_url.includes("/image/upload/")) resourceType = "image";
+      else if (resource.file_url.includes("/video/upload/")) resourceType = "video";
+      else resourceType = "raw";
+    } else {
+      // Fallback: use file_type
+      resourceType = resource.file_type === "image" ? "image" : "raw";
+    }
 
     // Generate a signed URL — inline for preview, attachment for download
     const disposition = isPreview ? "inline" : "attachment";

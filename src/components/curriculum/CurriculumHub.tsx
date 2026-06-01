@@ -4,15 +4,14 @@ import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Search, Filter, Upload, Users, BookOpen,
-  LogOut, ChevronDown, X, RefreshCw, Bell,
+  LogOut, ChevronDown, X, RefreshCw, Bell, Settings,
 } from "lucide-react";
 import CurriculumLogin, { type AuthUser } from "./CurriculumLogin";
 import UploadForm from "./UploadForm";
 import UserManagement from "./UserManagement";
 import ResourceCard, { type Resource } from "./ResourceCard";
-import {
-  SUBJECTS, TERMS, SESSIONS, STAGE_GROUPS,
-} from "@/data/curriculumConstants";
+import SettingsPanel from "./SettingsPanel";
+import { STAGE_GROUPS } from "@/data/curriculumConstants";
 
 type Tab  = "resources" | "users";
 type View = "grid" | "list";
@@ -34,6 +33,13 @@ export default function CurriculumHub() {
   const [filterTerm, setFilterTerm]       = useState("");
   const [filterSession, setFilterSession] = useState("");
   const [showPending, setShowPending]     = useState(false);
+  const [showSettings, setShowSettings]   = useState(false);
+
+  // Dynamic settings from DB
+  const [dynClasses,  setDynClasses]  = useState<string[]>([]);
+  const [dynSubjects, setDynSubjects] = useState<string[]>([]);
+  const [dynTerms,    setDynTerms]    = useState<string[]>([]);
+  const [dynSessions, setDynSessions] = useState<string[]>([]);
 
   // ── Restore session ──
   useEffect(() => {
@@ -42,6 +48,22 @@ export default function CurriculumHub() {
       if (saved) setUser(JSON.parse(saved));
     } catch {}
   }, []);
+
+  // Fetch dynamic settings from DB
+  const fetchCurriculumSettings = useCallback(async () => {
+    try {
+      const res  = await fetch("/api/curriculum-settings");
+      const data = await res.json();
+      if (data.success) {
+        setDynClasses(data.settings.class   || []);
+        setDynSubjects(data.settings.subject || []);
+        setDynTerms(data.settings.term       || []);
+        setDynSessions(data.settings.session || []);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => { fetchCurriculumSettings(); }, [fetchCurriculumSettings]);
 
   function handleLogin(loggedInUser: AuthUser) {
     setUser(loggedInUser);
@@ -158,7 +180,7 @@ export default function CurriculumHub() {
   // Parents only see their assigned classes in the filter
   const availableClasses = user.role === "parent" && user.classes && user.classes.length > 0
     ? user.classes
-    : STAGE_GROUPS.flatMap((g) => g.classes);
+    : (dynClasses.length > 0 ? dynClasses : STAGE_GROUPS.flatMap((g) => g.classes));
 
   return (
     <div className="min-h-screen bg-cream">
@@ -328,6 +350,17 @@ export default function CurriculumHub() {
                   <ChevronDown className={`w-4 h-4 transition-transform ${showFilter ? "rotate-180" : ""}`} />
                 </button>
 
+                {/* Settings — admin only */}
+                {user.role === "admin" && (
+                  <button
+                    onClick={() => setShowSettings(true)}
+                    className="w-10 h-10 flex items-center justify-center rounded-button border-2 border-gray-200 hover:border-gray-300 transition-colors"
+                    title="Curriculum Settings"
+                  >
+                    <Settings className="w-4 h-4 text-charcoal/50" />
+                  </button>
+                )}
+
                 {/* Upload — admin + teacher only */}
                 {user.role !== "parent" && (
                   <button
@@ -382,7 +415,7 @@ export default function CurriculumHub() {
                     className="font-poppins text-xs px-3 py-2.5 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">All Subjects</option>
-                    {SUBJECTS.map((s) => (
+                    {(dynSubjects.length > 0 ? dynSubjects : []).map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
@@ -394,7 +427,7 @@ export default function CurriculumHub() {
                     className="font-poppins text-xs px-3 py-2.5 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">All Terms</option>
-                    {TERMS.map((t) => (
+                    {(dynTerms.length > 0 ? dynTerms : []).map((t) => (
                       <option key={t} value={t}>{t}</option>
                     ))}
                   </select>
@@ -406,7 +439,7 @@ export default function CurriculumHub() {
                     className="font-poppins text-xs px-3 py-2.5 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">All Sessions</option>
-                    {SESSIONS.map((s) => (
+                    {(dynSessions.length > 0 ? dynSessions : []).map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
@@ -532,6 +565,14 @@ export default function CurriculumHub() {
           </>
         )}
       </div>
+
+      {/* Settings panel */}
+      {showSettings && (
+        <SettingsPanel
+          user={user}
+          onClose={() => { setShowSettings(false); fetchCurriculumSettings(); }}
+        />
+      )}
 
       {/* Upload modal */}
       {showUpload && (

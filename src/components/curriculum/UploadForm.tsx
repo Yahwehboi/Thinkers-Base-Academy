@@ -1,15 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  X, Upload, FileText, CheckCircle2,
-  AlertCircle, Loader2,
+  X,
+  Upload,
+  FileText,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
 } from "lucide-react";
 import {
-  SUBJECTS, TERMS, SESSIONS,
-  MAX_FILE_SIZE_BYTES, MAX_FILE_SIZE_MB,
-  ALLOWED_EXTENSIONS, STAGE_GROUPS,
+  MAX_FILE_SIZE_BYTES,
+  MAX_FILE_SIZE_MB,
+  ALLOWED_EXTENSIONS,
+  STAGE_GROUPS,
 } from "@/data/curriculumConstants";
 import type { AuthUser } from "./CurriculumLogin";
 
@@ -29,8 +34,12 @@ type FormState = {
 };
 
 const INITIAL_FORM: FormState = {
-  title: "", description: "", class: "",
-  subject: "", term: "", session: "",
+  title: "",
+  description: "",
+  class: "",
+  subject: "",
+  term: "",
+  session: "",
 };
 
 export default function UploadForm({ user, onClose, onSuccess }: Props) {
@@ -41,6 +50,26 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
   const [error, setError]         = useState("");
   const [success, setSuccess]     = useState(false);
   const fileRef                   = useRef<HTMLInputElement>(null);
+
+  // Dynamic settings from DB
+  const [dynClasses,  setDynClasses]  = useState<string[]>([]);
+  const [dynSubjects, setDynSubjects] = useState<string[]>([]);
+  const [dynTerms,    setDynTerms]    = useState<string[]>([]);
+  const [dynSessions, setDynSessions] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetch("/api/curriculum-settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.success) {
+          setDynClasses(data.settings.class   || []);
+          setDynSubjects(data.settings.subject || []);
+          setDynTerms(data.settings.term       || []);
+          setDynSessions(data.settings.session || []);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -55,7 +84,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
     }
     const ext = "." + f.name.split(".").pop()?.toLowerCase();
     if (!ALLOWED_EXTENSIONS.includes(ext)) {
-      return `File type not allowed. Accepted: PDF, Word, PowerPoint, Images.`;
+      return `File type not allowed. Accepted: ${ALLOWED_EXTENSIONS.join(", ")}`;
     }
     return null;
   }
@@ -110,11 +139,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
 
       const res = await fetch("/api/curriculum", {
         method: "POST",
-        headers: {
-          // JWT token sent in Authorization header
-          // Do NOT set Content-Type — browser sets it automatically with boundary for FormData
-          Authorization: `Bearer ${user.token}`,
-        },
+        headers: { Authorization: `Bearer ${user.token}` },
         body: formData,
       });
 
@@ -161,13 +186,9 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                 <Upload className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="font-nunito font-extrabold text-forest text-lg">
-                  Upload Resource
-                </h2>
+                <h2 className="font-nunito font-extrabold text-forest text-lg">Upload Resource</h2>
                 <p className="font-poppins text-charcoal/50 text-xs">
-                  {user.role === "admin"
-                    ? "Auto-approved on upload"
-                    : "Will be sent for admin approval"}
+                  {user.role === "admin" ? "Auto-approved on upload" : "Will be sent for admin approval"}
                 </p>
               </div>
             </div>
@@ -182,20 +203,14 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
           {/* Success state */}
           {success ? (
             <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", duration: 0.5 }}
-              >
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.5 }}>
                 <CheckCircle2 className="w-16 h-16 text-leaf mx-auto mb-4" />
               </motion.div>
-              <h3 className="font-nunito font-extrabold text-forest text-xl mb-2">
-                Uploaded Successfully!
-              </h3>
+              <h3 className="font-nunito font-extrabold text-forest text-xl mb-2">Uploaded Successfully!</h3>
               <p className="font-poppins text-charcoal/60 text-sm">
                 {user.role === "admin"
                   ? "Your resource is now live in the hub."
-                  : "Sent for admin approval. It will appear once approved."}
+                  : "Your resource has been sent for admin approval."}
               </p>
             </div>
           ) : (
@@ -204,22 +219,15 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
               {/* File drop zone */}
               <div>
                 <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-2">
-                  File{" "}
-                  <span className="text-charcoal/40 font-normal">
-                    (optional — you can add resource info without a file)
-                  </span>
+                  File <span className="text-charcoal/40">(optional — you can upload a resource without a file)</span>
                 </label>
 
                 {file ? (
                   <div className="flex items-center gap-3 bg-leaf/10 border-2 border-leaf/30 rounded-xl p-4">
                     <FileText className="w-8 h-8 text-leaf flex-shrink-0" />
                     <div className="flex-1 min-w-0">
-                      <p className="font-nunito font-bold text-forest text-sm truncate">
-                        {file.name}
-                      </p>
-                      <p className="font-poppins text-charcoal/50 text-xs">
-                        {formatFileSize(file.size)}
-                      </p>
+                      <p className="font-nunito font-bold text-forest text-sm truncate">{file.name}</p>
+                      <p className="font-poppins text-charcoal/50 text-xs">{formatFileSize(file.size)}</p>
                     </div>
                     <button
                       type="button"
@@ -243,8 +251,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                   >
                     <Upload className={`w-8 h-8 mx-auto mb-3 ${dragOver ? "text-leaf" : "text-charcoal/30"}`} />
                     <p className="font-nunito font-bold text-forest text-sm mb-1">
-                      Drop file here or{" "}
-                      <span className="text-leaf">browse</span>
+                      Drop file here or <span className="text-leaf">browse</span>
                     </p>
                     <p className="font-poppins text-charcoal/40 text-xs">
                       PDF, Word, PowerPoint, Images — max {MAX_FILE_SIZE_MB}MB
@@ -257,9 +264,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                   type="file"
                   accept={ALLOWED_EXTENSIONS.join(",")}
                   className="hidden"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) handleFileSelect(e.target.files[0]);
-                  }}
+                  onChange={(e) => { if (e.target.files?.[0]) handleFileSelect(e.target.files[0]); }}
                 />
               </div>
 
@@ -281,8 +286,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
               {/* Description */}
               <div>
                 <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                  Description{" "}
-                  <span className="text-charcoal/40 font-normal">(optional)</span>
+                  Description <span className="text-charcoal/40">(optional)</span>
                 </label>
                 <textarea
                   name="description"
@@ -296,9 +300,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
 
               {/* Class */}
               <div>
-                <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                  Class *
-                </label>
+                <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Class *</label>
                 <select
                   required
                   name="class"
@@ -319,9 +321,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
 
               {/* Subject */}
               <div>
-                <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                  Subject *
-                </label>
+                <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Subject *</label>
                 <select
                   required
                   name="subject"
@@ -330,7 +330,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                   className="w-full font-poppins text-sm px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                 >
                   <option value="">Select a subject...</option>
-                  {SUBJECTS.map((s) => (
+                  {(dynSubjects.length > 0 ? dynSubjects : []).map((s) => (
                     <option key={s} value={s}>{s}</option>
                   ))}
                 </select>
@@ -339,9 +339,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
               {/* Term + Session */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                    Term *
-                  </label>
+                  <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Term *</label>
                   <select
                     required
                     name="term"
@@ -350,15 +348,13 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                     className="w-full font-poppins text-sm px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">Select...</option>
-                    {TERMS.map((t) => (
+                    {(dynTerms.length > 0 ? dynTerms : []).map((t) => (
                       <option key={t} value={t}>{t}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">
-                    Session *
-                  </label>
+                  <label className="font-poppins text-xs font-semibold text-charcoal/60 block mb-1.5">Session *</label>
                   <select
                     required
                     name="session"
@@ -367,7 +363,7 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
                     className="w-full font-poppins text-sm px-4 py-3 rounded-xl border-2 border-gray-100 focus:border-leaf focus:outline-none transition-colors bg-white"
                   >
                     <option value="">Select...</option>
-                    {SESSIONS.map((s) => (
+                    {(dynSessions.length > 0 ? dynSessions : []).map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
@@ -376,17 +372,13 @@ export default function UploadForm({ user, onClose, onSuccess }: Props) {
 
               {/* Error */}
               {error && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3"
-                >
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
                   <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0" />
                   <p className="font-poppins text-red-600 text-xs">{error}</p>
                 </motion.div>
               )}
 
-              {/* Buttons */}
+              {/* Submit */}
               <div className="flex gap-3 pt-1">
                 <button
                   type="button"
