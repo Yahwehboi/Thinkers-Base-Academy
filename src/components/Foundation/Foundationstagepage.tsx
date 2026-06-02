@@ -137,9 +137,9 @@ function WhatTheyLearn() {
 
   const areas = [
     { icon: BookOpen, title: "Language & Literacy", desc: "Phonics, listening, speaking, early reading and love of stories and books." },
-    { icon: Star, title: "Mathematics", desc: "Counting, shapes, patterns, sorting and early number sense through play." },
+    { icon: Star, title: "Numeracy", desc: "Counting, shapes, patterns, sorting and early number sense through play." },
     { icon: Palette, title: "Expressive Arts", desc: "Drawing, painting, music, drama and movement for creative self-expression." },
-    { icon: Users, title: "Personal & Social", desc: "Sharing, turn-taking, empathy, self-confidence and emotional regulation." },
+    { icon: Users, title: "Personal, Social & Emotional", desc: "Sharing, turn-taking, empathy, self-confidence and emotional regulation." },
     { icon: Sun, title: "Understanding the World", desc: "Science, nature, technology and cultural awareness through exploration." },
     { icon: Smile, title: "Physical Development", desc: "Gross and fine motor skills, outdoor play, health and body awareness." },
   ];

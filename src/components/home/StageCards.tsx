@@ -31,7 +31,7 @@ const stages: StageWithOutcome[] = [
     description:
       "A warm, play-based environment where your youngest child takes their first confident steps into learning through exploration and guided discovery.",
     href: "/playgroup",
-    classes: "Playgroup · Reception",
+    classes: "Playgroup",
     hex: "#FEF9E7",
     image: "/images/P2.webp",
     outcome: "Foundation Stage (EYFS)",
@@ -45,7 +45,7 @@ const stages: StageWithOutcome[] = [
     description:
       "Building confident readers, writers and problem-solvers. Key Stage 1 pupils develop strong academic habits alongside social and creative skills.",
     href: "/pre-school",
-    classes: "Preschool 1 – Preschool 2",
+    classes: "Preschool/Reception",
     hex: "#EBF5FB",
     image: "/images/small pupils in uniform.jpeg",
     outcome: "Key Stage 1",
