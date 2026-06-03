@@ -111,12 +111,12 @@ export default function ResourceCard({
 
   function handlePreview() {
     if (resource.fileType === "pdf" || resource.fileType === "image") {
-      // Put filename in URL path so Chrome shows it as the tab title
+      // Desktop: open via proxy with inline Content-Disposition — renders in browser tab
       const fname = encodeURIComponent(resource.originalName || `file.${resource.fileType}`);
       const url   = `/api/download/${fname}?id=${resource.id}&preview=true&token=${encodeURIComponent(user.token)}`;
       window.open(url, "_blank");
     } else {
-      // DOCX, PPTX — Google Docs Viewer renders them in browser
+      // Desktop: Google Docs Viewer renders DOCX/PPTX in browser
       const viewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(resource.fileName)}&embedded=false`;
       window.open(viewerUrl, "_blank");
     }
@@ -221,11 +221,11 @@ export default function ResourceCard({
               </button>
             )}
 
-            {/* Preview — approved OR admin/teacher */}
+            {/* Preview — desktop only; mobile browsers cannot render files inline */}
             {hasFile && canAccessFile && (
               <button
                 onClick={handlePreview}
-                className="w-9 h-9 flex items-center justify-center bg-gray-100 rounded-button hover:bg-gray-200 transition-colors flex-shrink-0"
+                className="w-9 h-9 hidden sm:flex items-center justify-center bg-gray-100 rounded-button hover:bg-gray-200 transition-colors flex-shrink-0"
                 title={
                   resource.fileType === "pdf" || resource.fileType === "image"
                     ? "Preview"

@@ -9,7 +9,7 @@ const reasons = [
     icon: Shield,
     color: "#52B788",
     title: "Safe & Secure Environment",
-    desc: "Fenced campus, locked gates, 24-hour security personnel, and 30 CCTV cameras so your child is always protected.",
+    desc: "Fenced campus, locked gates, 24-hour security personnel, and 50+ CCTV cameras so your child is always protected.",
   },
   {
     icon: GraduationCap,

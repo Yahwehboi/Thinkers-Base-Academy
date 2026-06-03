@@ -8,8 +8,8 @@ import { Star } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "Our daughter loves coming to Thinkers Base Academy. The playgroup teachers are warm and attentive, and she’s blossoming academically and socially.",
-    author: "Mrs. Adaeze Okonkwo",
+      "Our daughter loves coming to Thinkers Base Academy. The playgroup teachers are warm and attentive. She's blossoming academically and socially.",
+    author: "Mrs. Uzodinma Oyinyechukwu",
     detail: "Parent of a Playgroup pupil",
     stage: "Playgroup" as const,
     stageColor: "#52B788",
@@ -17,18 +17,28 @@ const testimonials = [
   },
   {
     quote:
-      "The Pre school teachers really know each child. My son has improved tremendously. Thinkers Base Academy doesn’t let any child fall behind.",
-    author: "Mr. Chukwuemeka Nwosu",
+      "My son is gradually  progressing in his handwriting skill. Thumbs up to the Pre school teachers for their effort.",
+    author: "Mr. Onovo Olochukwu",
     detail: "Parent of a Pre school pupil",
-    stage: "Pre school" as const,
+    stage: "Preschool" as const,
     stageColor: "#1B4332",
     emoji: "🎒",
   },
   {
     quote:
+      "The Reception teachers really know each child. My son has improved tremendously. Thinkers Base Academy doesn’t let any child fall behind.",
+    author: "Engr. Uchenna Ozongwu",
+    detail: "Parent of a Reception pupil",
+    stage: "Reception" as const,
+    stageColor: "#1B4332",
+    emoji: "✏️",
+  },
+  
+  {
+    quote:
       "Grade School at Thinkers Base Academy prepared my daughter academically and personally. She is confident, independent, and ready for her future.",
-    author: "Mrs. Funmi Adeola",
-    detail: "Parent of a Grade 3 pupil",
+    author: "Mrs. Nnedi Ezedigboh",
+    detail: "Parent of a Grade 4 pupil",
     stage: "Grade school" as const,
     stageColor: "#3A6EA5",
     emoji: "📚",
@@ -148,7 +158,7 @@ export default function Testimonials() {
         </motion.div>
 
         {/* Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {testimonials.map((t, i) => (
             <TestimonialCard key={i} testimonial={t} index={i} inView={inView} />
           ))}

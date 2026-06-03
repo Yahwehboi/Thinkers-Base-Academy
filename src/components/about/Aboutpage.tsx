@@ -456,13 +456,12 @@ function OurFacilities() {
 
   const facilities = [
     { icon: Building2, title: "Child-Friendly Campus", desc: "Safe, attractive, comfortable and hygienic facilities designed for young learners" },
-    { icon: Shield, title: "24/7 Security", desc: "Fenced premises, locked gates, security personnel & 30 CCTV cameras" },
+    { icon: Shield, title: "24/7 Security", desc: "Fenced premises, locked gates, security personnel & 50+ CCTV cameras" },
     { icon: Wifi, title: "Smart Classrooms", desc: "Air-conditioned rooms with modern technology integration" },
     { icon: BookOpen, title: "Library / ICT Room", desc: "Well-stocked library and fully equipped computer room" },
     { icon: Utensils, title: "Kitchen Facility", desc: "Well-equipped kitchen for culinary club lessons" },
     { icon: Bus, title: "AC Transportation", desc: "Air-conditioned bus for safe pickup and drop-off" },
     { icon: Sprout, title: "Playground", desc: "Well-equipped, safe playground for physical development and exploration" },
-    { icon: Waves, title: "Swimming Pool", desc: "Supervised swimming pool for water sports and swimming club" },
     { icon: Droplets, title: "Steady Water Supply", desc: "24-hour clean, steady water supply throughout the campus" },
     { icon: Sun, title: "Solar Electricity", desc: "24-hour solar-powered electricity — no power cuts, no interruptions" },
   ];
