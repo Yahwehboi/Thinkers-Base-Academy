@@ -27,6 +27,13 @@ export const metadata = {
     "Trans-Ekulu school",
     "New GRA school Enugu",
   ],
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-96x96.png", sizes: "96x96", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     title: "Thinkers Base Academy — Every Child Belongs Here",
     description:
