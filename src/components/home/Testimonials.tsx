@@ -146,7 +146,7 @@ export default function Testimonials() {
           className="text-center mb-12"
         >
           <span className="inline-block font-poppins text-leaf font-semibold text-sm tracking-widest uppercase mb-3">
-            What Families Say
+            What Family Says
           </span>
           <h2 className="font-nunito font-extrabold text-3xl sm:text-4xl text-forest mb-4">
             Trusted by Our Parents
