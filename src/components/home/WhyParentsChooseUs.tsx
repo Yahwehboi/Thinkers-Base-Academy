@@ -38,7 +38,7 @@ const reasons = [
   {
     icon: BookHeart,
     color: "#5BA4CF",
-    title: "Values-Based Learning",
+    title: "Value-Based Learning",
     desc: "We don't just build academic achievers — we build CLASSY young leaders: Communicators, Lifelong Learners, and Social Contributors.",
   },
 ];
