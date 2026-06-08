@@ -69,7 +69,6 @@ function SchoolLifeHero() {
             {[
               { emoji: "🎭", value: "8", label: "Clubs & Activities" },
               { emoji: "📸", value: "365", label: "Days of memories" },
-              { emoji: "🏊", value: "Pool", label: "Swimming facility" },
               { emoji: "🎓", value: "100%", label: "Happy pupils" },
             ].map((item, i) => (
               <motion.div key={item.label} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 + i * 0.1 }} className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-card p-5 text-center">

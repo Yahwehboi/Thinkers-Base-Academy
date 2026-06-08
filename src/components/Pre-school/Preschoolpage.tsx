@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 
 const COLOR = "#5BA4CF";
-const COLOR_BG = "#EBF5FB";
 
 function PreSchoolHero() {
   return (
@@ -44,7 +43,7 @@ function PreSchoolHero() {
             </motion.h1>
 
             <motion.p initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35, duration: 0.5 }} className="font-poppins text-white/80 text-lg leading-relaxed mb-8 max-w-lg">
-              Pre School at TBA is where curiosity meets structure. Children aged 4–6 build confident reading, writing and maths skills — while keeping their love of learning alive.
+              Pre School at TBA is where curiosity meets structure. Children aged 2–5 in Preschool 1, Preschool 2 and Reception build confident communication, early literacy and numeracy skills — while keeping their love of learning alive.
             </motion.p>
 
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }} className="flex flex-wrap gap-3">
@@ -59,8 +58,8 @@ function PreSchoolHero() {
 
           <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.6 }} className="hidden lg:grid grid-cols-2 gap-4">
             {[
-              { emoji: "🎒", value: "Ages 4–6", label: "Age range" },
-              { emoji: "📖", value: "Grade 1–2", label: "Classes offered" },
+              { emoji: "🎒", value: "Ages 2–5", label: "Age range" },
+              { emoji: "📖", value: "3 Classes", label: "PS1, PS2 & Reception" },
               { emoji: "✍️", value: "Literacy", label: "Strong focus" },
               { emoji: "🔢", value: "Numeracy", label: "Core skill" },
             ].map((item, i) => (
@@ -88,8 +87,24 @@ function PreSchoolClasses() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   const classes = [
-    { name: "Grade 1", ages: "Ages 4 – 5", desc: "Formal learning begins. Phonics, reading, handwriting, addition and subtraction — all taught through engaging, age-appropriate activities.", emoji: "🌟" },
-    { name: "Grade 2", ages: "Ages 5 – 6", desc: "Growing independence and academic confidence. Fluent reading, story writing, multiplication foundations and deeper subject exploration.", emoji: "🚀" },
+    {
+      name: "Preschool 1",
+      ages: "Ages 2 – 3",
+      desc: "Children begin structured learning through play, song and guided activities. Focus on language development, social skills, colours, shapes and early number awareness.",
+      emoji: "🌟",
+    },
+    {
+      name: "Preschool 2",
+      ages: "Ages 3 – 4",
+      desc: "Building on Preschool 1, children develop pre-writing skills, phonemic awareness, basic counting and greater independence in classroom routines.",
+      emoji: "🚀",
+    },
+    {
+      name: "Reception",
+      ages: "Ages 4 – 5",
+      desc: "The bridge between preschool and formal schooling. Children in Reception begin phonics, early reading, writing and foundational mathematics in a nurturing, structured setting.",
+      emoji: "🎓",
+    },
   ];
 
   return (
@@ -98,9 +113,10 @@ function PreSchoolClasses() {
         <motion.div initial={{ opacity: 0, y: 16 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5 }} className="text-center mb-12">
           <span className="inline-block font-poppins text-leaf font-semibold text-sm tracking-widest uppercase mb-3">Key Stage 1</span>
           <h2 className="font-nunito font-extrabold text-3xl sm:text-4xl text-forest mb-4">Our Pre School Classes</h2>
+          <p className="font-poppins text-charcoal/60 text-base max-w-xl mx-auto">Three carefully structured classes that take your child from early exploration all the way to readiness for Grade School.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {classes.map((cls, i) => (
             <motion.div key={cls.name} initial={{ opacity: 0, y: 24 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ delay: i * 0.15, duration: 0.5 }} className="bg-white rounded-card p-8 shadow-card hover:shadow-card-hover hover:-translate-y-1 transition-all duration-300" style={{ borderTop: `4px solid ${COLOR}` }}>
               <div className="text-5xl mb-4">{cls.emoji}</div>
@@ -120,14 +136,14 @@ function WhatTheyLearn() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   const subjects = [
-    { icon: BookOpen, title: "English Language", desc: "Phonics, guided reading, creative writing, comprehension and oral communication." },
-    { icon: Calculator, title: "Mathematics", desc: "Number, addition, subtraction, multiplication foundations, shapes and measurements." },
-    { icon: Globe, title: "Basic Science & Technology", desc: "Simple experiments, nature study, technology awareness and problem solving." },
-    { icon: Globe, title: "Social Studies", desc: "Community, family, environment, culture and civic values." },
-    { icon: Palette, title: "Creative Arts", desc: "Drawing, painting, crafts, music appreciation and dramatic play." },
-    { icon: Lightbulb, title: "Critical Thinking", desc: "Puzzles, logic games, group projects and open-ended question activities." },
+    { icon: BookOpen, title: "Language & Literacy", desc: "Phonics, guided reading, storytelling, early writing and oral communication skills." },
+    { icon: Calculator, title: "Mathematics", desc: "Counting, number recognition, shapes, patterns and simple addition concepts." },
+    { icon: Globe, title: "Basic Science", desc: "Nature exploration, simple observations, curiosity about the world around them." },
+    { icon: Globe, title: "Social Studies", desc: "Family, community, culture, sharing and learning to live alongside others." },
+    { icon: Palette, title: "Creative Arts", desc: "Drawing, painting, crafts, music, rhymes and imaginative role play." },
+    { icon: Lightbulb, title: "Critical Thinking", desc: "Puzzles, sorting activities, problem-solving games and guided questioning." },
     { icon: Users, title: "Religious & Moral Education", desc: "Bible stories, moral values, character building and positive social behaviours." },
-    { icon: Globe, title: "Physical & Health Education", desc: "Outdoor games, coordination, body awareness and healthy habit formation." },
+    { icon: Globe, title: "Physical Development", desc: "Gross and fine motor activities, outdoor play, coordination and healthy habits." },
   ];
 
   return (
@@ -161,12 +177,12 @@ function WhyPreSchool() {
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   const outcomes = [
-    "Confident readers who love books by the end of Grade 2",
-    "Strong number foundations ready for Grade 3 mathematics",
-    "Children who can express themselves clearly in writing and speech",
+    "Strong communication and early reading skills by end of Reception",
+    "Confident counting, number recognition and early maths foundations",
+    "Children who can express themselves clearly in speech and early writing",
     "Socially aware, kind and collaborative classmates",
-    "Creative problem-solvers who ask great questions",
-    "Ready and excited to move into Grade School",
+    "Creative and curious learners who ask great questions",
+    "Fully ready and excited to transition into Grade School",
   ];
 
   return (
@@ -179,7 +195,7 @@ function WhyPreSchool() {
             </div>
             <div className="absolute -bottom-5 -right-5 bg-white rounded-2xl px-5 py-4 shadow-xl border border-gray-100">
               <p className="font-nunito font-extrabold text-forest text-lg leading-none">Key Stage 1</p>
-              <p className="font-poppins text-charcoal/55 text-xs mt-0.5">Grade 1 & Grade 2</p>
+              <p className="font-poppins text-charcoal/55 text-xs mt-0.5">Preschool 1, Preschool 2 & Reception</p>
             </div>
           </motion.div>
 
@@ -216,7 +232,7 @@ function PreSchoolCta() {
           <div className="relative">
             <span className="text-5xl mb-4 block">🎒</span>
             <h2 className="font-nunito font-extrabold text-2xl sm:text-3xl text-white mb-3">Ready for the Next Adventure?</h2>
-            <p className="font-poppins text-white/75 text-sm mb-7 max-w-md mx-auto leading-relaxed">Spaces in Grade 1 and Grade 2 are limited. Get in touch today to find out about availability.</p>
+            <p className="font-poppins text-white/75 text-sm mb-7 max-w-md mx-auto leading-relaxed">Spaces in Preschool 1, Preschool 2 and Reception are limited. Get in touch today to find out about availability.</p>
             <div className="flex flex-wrap gap-3 justify-center">
               <a href="https://wa.me/2348037134462" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 font-nunito font-extrabold text-sm px-6 py-3 rounded-button hover:opacity-90 hover:-translate-y-0.5 transition-all shadow-lg" style={{ backgroundColor: COLOR, color: "#ffffff" }}>
                 Enquire via WhatsApp <ArrowRight className="w-4 h-4" />
