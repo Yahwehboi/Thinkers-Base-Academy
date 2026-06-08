@@ -27,6 +27,9 @@ export const metadata = {
     "Trans-Ekulu school",
     "New GRA school Enugu",
   ],
+  verification: {
+    google: "8745a79c4891f089",
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
