@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
-export default function PlaygroupPage() {
+export default function playgroupPage() {
   redirect("/foundation-stage");
 }

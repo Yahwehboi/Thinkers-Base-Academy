@@ -14,14 +14,14 @@ export const schoolInfo: SchoolInfo = {
 // ── Stages ───────────────────────────────────────────────────────────────────
 const stages: Stage[] = [
   {
-    id: "Playgroup",
+    id: "playgroup",
     label: "Little Learners",
     emoji: "🌱",
     ages: "Ages 1 – 2",
     color: "#F4D03F",
     description: "A safe, warm space where your child takes their first steps into learning through play.",
-    href: "/Playgroup",
-    classes: "Playgroup ·· Reception",
+    href: "/playgroup",
+    classes: "playgroup ·· Reception",
     hex: "#FEF9E7",
     image: "/images/P2.webp",
   },
