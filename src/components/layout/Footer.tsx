@@ -202,6 +202,9 @@ export default function Footer() {
                   <FooterLink href="/about">About Us</FooterLink>
                 </li>
                 <li>
+                <FooterLink href="/privacy-policy">Privacy Policy</FooterLink>
+                </li>
+                <li>
                   <FooterLink href="/school-life">School Life</FooterLink>
                 </li>
               </ul>

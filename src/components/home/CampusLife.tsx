@@ -11,7 +11,6 @@ const moments = [
   { src: "/images/pupils playing.jpg", label: "Playtime", span: "" },
   { src: "/images/fit future leaders.jpg", label: "Science Club", span: "" },
   { src: "/images/students holding adire.jpeg", label: "Art and Craft", span: "col-span-2" },
-  { src: "/images/small pupils in uniform.jpeg", label: "Ready to Learn", span: "" },
   { src: "/images/Students in swimmingpool.jpeg", label: "Swimming", span: "col -3" },
 ];
 

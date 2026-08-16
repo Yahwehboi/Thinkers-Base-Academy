@@ -47,7 +47,7 @@ const stages: StageWithOutcome[] = [
     href: "/pre-school",
     classes: "Preschool/Reception",
     hex: "#EBF5FB",
-    image: "/images/small pupils in uniform.jpeg",
+    image: "/images/bts1.jpg",
     outcome: "Key Stage 1",
   },
   {

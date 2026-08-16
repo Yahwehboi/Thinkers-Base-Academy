@@ -274,7 +274,6 @@ const galleryPhotos = [
   { src: "/images/students holding adire.jpeg", label: "Cultural Day", size: "col-span-2" },
   { src: "/images/students in traditional atire.jpeg", label: "Traditional Attire", size: "" },
   { src: "/images/pupil with mic.jpg", label: "Public Speaking", size: "" },
-  { src: "/images/small pupils in uniform.jpeg", label: "Ready to Learn", size: "" },
   { src: "/images/P2.webp", label: "Little Learners", size: "" },
 ];
 
